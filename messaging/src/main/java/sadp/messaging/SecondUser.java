@@ -1,9 +1,7 @@
 package sadp.messaging;
-
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
-
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -24,7 +22,6 @@ public class SecondUser {
 				for (int i = 0; i < user.length; i++) {
 					System.out.println(i + ": " + user[i]);
 				}
-
 				receiver = input.nextInt();
 
 			} while (receiver >= user.length || receiver < 0);
