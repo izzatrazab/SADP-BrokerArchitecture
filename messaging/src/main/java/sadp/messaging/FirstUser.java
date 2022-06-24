@@ -1,4 +1,4 @@
-package com.sadp;
+package sadp.messaging;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -14,46 +14,48 @@ public class FirstUser {
 		Connection connection = factory.newConnection();
 		Channel channel = connection.createChannel();
 		Scanner input = new Scanner(System.in);
-		
-		String[] user= {"Ali", "Abu"};
-		int receiver = 99;
-		
-		do {
-		System.out.println("Please select the person you want to chat by entering the number:");
-		for(int i=0;i<user.length;i++) {
-			System.out.println(i+": "+user[i]);
-		}
-		
-		receiver = input.nextInt();
-		
-		}while(receiver >= user.length || receiver < 0);
-		
-		System.out.println("You are now chatting with "+user[receiver]+"\n Enter '/e' to stop chatting");
-		Chat("Ahmad",user[receiver], channel, input);
 
-		
+		String[] user = { "Ali", "Abu" };
+		int receiver = 99;
+
+		while (true) {
+			do {
+				System.out.println("Ahmad, select the person you want to chat by entering the number:");
+
+				for (int i = 0; i < user.length; i++) {
+					System.out.println(i + ": " + user[i]);
+				}
+
+				receiver = input.nextInt();
+
+			} while (receiver >= user.length || receiver < 0);
+
+			System.out.println("You are now chatting with " + user[receiver] + "\n Enter '/e' to stop chatting");
+			Chat("Ahmad", user[receiver], channel, input);
+			receiver = 99;
+		}
 	}
-	
-	static void Chat(String sender, String receiver, Channel channel, Scanner input) throws IOException, TimeoutException 
-	{
+
+	static void Chat(String sender, String receiver, Channel channel, Scanner input)
+			throws IOException, TimeoutException {
+		String chat;
 		channel.queueDeclare(receiver, false, false, false, null);
 
 		channel.basicConsume(sender, true, (consumerTag, message) -> {
 
 			String m = new String(message.getBody(), "UTF-8");
-			System.out.println(receiver+": "+ m);
+			System.out.println(receiver + ": " + m);
 		}, consumerTag -> {
 		});
 
 		while (true) {
-			String chat = input.nextLine(); // Read user input
+			chat = input.nextLine(); // Read user input
 			if (chat.equals("/e")) {
 				break;
 			}
 
 			channel.basicPublish("", receiver, false, null, chat.getBytes());
-
+			chat = null;
 		}
-		input.close();
 	}
 }

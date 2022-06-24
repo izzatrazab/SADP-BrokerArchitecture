@@ -1,4 +1,4 @@
-package com.sadp;
+package sadp.messaging;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -14,34 +14,35 @@ public class ThirdUser {
 		Connection connection = factory.newConnection();
 		Channel channel = connection.createChannel();
 		Scanner input = new Scanner(System.in);
-		
-		String[] user= {"Ahmad", "Ali"};
+		String[] user = { "Ahmad", "Ali" };
 		int receiver = 99;
-		
-		do {
-		System.out.println("Please select the person you want to chat by entering the number:");
-		for(int i=0;i<user.length;i++) {
-			System.out.println(i+": "+user[i]);
+
+		while (true) {
+			do {
+				System.out.println("Abu, select the person you want to chat by entering the number:");
+				for (int i = 0; i < user.length; i++) {
+					System.out.println(i + ": " + user[i]);
+				}
+
+				receiver = input.nextInt();
+
+			} while (receiver >= user.length || receiver < 0);
+
+			System.out.println("You are now chatting with " + user[receiver] + "\n Enter '/e' to stop chatting");
+			Chat("Abu", user[receiver], channel, input);
+			receiver = 99;
 		}
-		
-		receiver = input.nextInt();
-		
-		}while(receiver >= user.length || receiver < 0);
-		
-		System.out.println("You are now chatting with "+user[receiver]+"\n Enter '/e' to stop chatting");
-		Chat("Abu",user[receiver], channel, input);
 
-		
 	}
-	
-	static void Chat(String sender, String receiver, Channel channel, Scanner input) throws IOException, TimeoutException 
-	{
-		channel.queueDeclare(receiver, false, false, false, null);
 
+	static void Chat(String sender, String receiver, Channel channel, Scanner input)
+			throws IOException, TimeoutException {
+		channel.queueDeclare(receiver, false, false, false, null);
+		
 		channel.basicConsume(sender, true, (consumerTag, message) -> {
 
 			String m = new String(message.getBody(), "UTF-8");
-			System.out.println(receiver+": "+ m);
+			System.out.println(receiver + ": " + m);
 		}, consumerTag -> {
 		});
 
@@ -52,8 +53,6 @@ public class ThirdUser {
 			}
 
 			channel.basicPublish("", receiver, false, null, chat.getBytes());
-
 		}
-		input.close();
 	}
 }
